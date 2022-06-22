@@ -24,7 +24,6 @@
 
 // export default App;
 
-
 // import { useEffect, useState } from "react";
 // import { createWorker } from "tesseract.js";
 // import "./App.css";
@@ -36,7 +35,7 @@
 //     logger: (m) => {
 //       // console.log(m);
 //       setProgress(parseInt(m.progress * 100));
-     
+
 //     },
 //   });
 //   const convertImageToText = async () => {
@@ -66,12 +65,12 @@
 //     reader.onloadend = () => {
 //       const imageDataUri = reader.result;
 //       // console.log({ imageDataUri });
-      
+
 //     // console.log("imageDataUri is =>",imageDataUri);
 //       setImageData(imageDataUri);
 //       console.log("image uploaded");
 //     };
-   
+
 //     reader.readAsDataURL(file);
 //   }
 //   return (
@@ -102,21 +101,22 @@
 // }
 // export default App;
 
-import React from 'react';
-import Tesseract from 'tesseract.js';
+import heic2any from "heic2any";
+import React from "react";
+import Tesseract from "tesseract.js";
 
 const App = () => {
   const [isLoading, setIsLoading] = React.useState(false);
-  const [image, setImage] = React.useState('');
-  const [text, setText] = React.useState('');
+  const [image, setImage] = React.useState("");
+  const [text, setText] = React.useState("");
   const [progress, setProgress] = React.useState(0);
 
   const handleSubmit = () => {
     setIsLoading(true);
-    Tesseract.recognize(image, 'eng', {
+    Tesseract.recognize(image, "eng", {
       logger: (m) => {
         // console.log(m);
-        if (m.status === 'recognizing text') {
+        if (m.status === "recognizing text") {
           setProgress(parseInt(m.progress * 100));
         }
       },
@@ -131,8 +131,38 @@ const App = () => {
       });
   };
 
+  const handleImageClick = (e) => {
+ 
+    const files = e.target.files;
+    if (files?.length) {
+      const file = files[0];
+      console.log("uploaded file: ", file);
+      if (
+        file.type.toLowerCase() === "image/heic" ||
+        file.name.toLowerCase().includes(".heic")
+      ) {
+        // toggleWaiting();
+        heic2any({ blob: file, toType: "image/jpg", quality: 1 }).then(
+          (newImage) => {
+            console.log("new image:", newImage);
+            const url = URL.createObjectURL(newImage);
+            console.log("new image after:", url);
+            // toggleWaiting();
+            setImage(newImage);
+          }
+        );
+      }else{
+        setImage(URL.createObjectURL(e.target.files[0]))
+      }
+    } else {
+      console.error("No file specified");
+    }
+
+    // setImage(URL.createObjectURL(e.target.files[0]));
+  };
+
   return (
-    <div className="container" style={{ height: '100vh' }}>
+    <div className="container" style={{ height: "100vh" }}>
       <div className="row h-100">
         <div className="col-md-5 mx-auto h-100 d-flex flex-column justify-content-center">
           {!isLoading && (
@@ -141,8 +171,8 @@ const App = () => {
           {isLoading && (
             <>
               <progress className="form-control" value={progress} max="100">
-                {progress}%{' '}
-              </progress>{' '}
+                {progress}%{" "}
+              </progress>{" "}
               <p className="text-center py-0 my-0">Converting:- {progress} %</p>
             </>
           )}
@@ -150,9 +180,7 @@ const App = () => {
             <>
               <input
                 type="file"
-                onChange={(e) =>
-                  setImage(URL.createObjectURL(e.target.files[0]))
-                }
+                onChange={(e) => handleImageClick(e)}
                 className="form-control mt-5 mb-2"
               />
               <input
@@ -180,3 +208,18 @@ const App = () => {
 };
 
 export default App;
+
+// if (
+//   file.type.toLowerCase() === "image/heic" ||
+//   file.name.toLowerCase().includes(".heic")
+// ) {
+//   toggleWaiting();
+//   heic2any({ blob: file, toType: "image/jpg", quality: 1 }).then(
+//     (newImage) => {
+//       console.log("new image:", newImage);
+//       const url = URL.createObjectURL(newImage);
+//       toggleWaiting();
+//       addNewImage(url);
+//     }
+//   );
+// }
