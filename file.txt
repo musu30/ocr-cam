@@ -1,0 +1,3 @@
+https://www.codegrepper.com/code-examples/javascript/host+my+react+app+on+heroku
+npx create-react-app <your_app_name>
+npm install -S tesseract.js 
