@@ -40,14 +40,18 @@ function App() {
     },
   });
   const convertImageToText = async () => {
+    console.log("reached")
     if (!imageData) return;
     await worker.load();
     await worker.loadLanguage("eng");
     await worker.initialize("eng");
+    const data=await worker.recognize(imageData);
+    // console.log("data -----",data);
     const {
       data: { text },
     } = await worker.recognize(imageData);
-    setOcr(text);
+    if(text!=undefined)
+     setOcr(text);
   };
 
   useEffect(() => {
@@ -56,13 +60,18 @@ function App() {
 
   function handleImageChange(e) {
     const file = e.target.files[0];
+    // console.log("file name is =>",file);
     if(!file)return;
     const reader = new FileReader();
     reader.onloadend = () => {
       const imageDataUri = reader.result;
       // console.log({ imageDataUri });
+      
+    // console.log("imageDataUri is =>",imageDataUri);
       setImageData(imageDataUri);
+      console.log("image uploaded");
     };
+   
     reader.readAsDataURL(file);
   }
   return (
@@ -85,7 +94,7 @@ function App() {
         </div>
       </div>}
       <div className="display-flex">
-        <img src={imageData} alt="" srcset="" />
+        <img src={imageData}  style={{width:"300px",height:"300px"}}alt="" srcset="" />
         <p>{ocr}</p>
       </div>
     </div>
