@@ -112,10 +112,12 @@ const App = () => {
   const [progress, setProgress] = React.useState(0);
 
   const handleSubmit = () => {
+    console.log("clicked")
+
     setIsLoading(true);
     Tesseract.recognize(image, "eng", {
       logger: (m) => {
-        // console.log(m);
+        console.log(m);
         if (m.status === "recognizing text") {
           setProgress(parseInt(m.progress * 100));
         }
@@ -131,7 +133,7 @@ const App = () => {
       });
   };
 
-  const handleImageClick = (e) => {
+  const handleImageClick = async(e) => {
  
     const files = e.target.files;
     if (files?.length) {
@@ -141,13 +143,24 @@ const App = () => {
         file.type.toLowerCase() === "image/heic" ||
         file.name.toLowerCase().includes(".heic")
       ) {
-        // toggleWaiting();
-        heic2any({ blob: file, toType: "image/jpg", quality: 1 }).then(
+
+
+        // let blobURL = URL.createObjectURL(e.target.files[0]);
+        // let blobRes = await fetch(blobURL)
+        // let blob = await blobRes.blob()
+        // let conversionResult = await heic2any({ blob })
+        // var url = URL.createObjectURL(conversionResult);
+        // setImage(url);
+
+
+
+
+
+        heic2any({ blob:file, toType: "image/png", quality: 0.94,canvas: true }).then(
           (newImage) => {
             console.log("new image:", newImage);
             const url = URL.createObjectURL(newImage);
             console.log("new image after:", url);
-            // toggleWaiting();
             setImage(newImage);
           }
         );
